@@ -337,7 +337,7 @@ export class SettingsManager {
         if (!yamlContent) {
             return results;
         }
-        
+
         const stack = [yamlContent];
 
         while (stack.length > 0) {
@@ -352,6 +352,12 @@ export class SettingsManager {
                             if (Array.isArray(currentValue)) {
                                 for (const item of currentValue) {
                                     results.push({ key: item, value: '', password: password, selected: false, visible: visible, mode: Mode.manual });
+                                }
+                            } else if (typeof currentValue === 'object') {
+                                // this is a specific case for 'runs-on' when it's using a 'group' object
+                                // if findInYaml is extended to other keys, a better way to handle different object structures will be needed
+                                if (targetKey === SettingYamlKey.runners && currentValue['group']) {
+                                    results.push({ key: currentValue['group'], value: '', password: password, selected: false, visible: visible, mode: Mode.manual });
                                 }
                             } else {
                                 results.push({ key: currentValue, value: '', password: password, selected: false, visible: visible, mode: Mode.manual });
